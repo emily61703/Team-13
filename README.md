@@ -1,4 +1,4 @@
-Team #13
+Team #13:
 Emily Becker
 Kaylynn Charles
 Sam Day
