@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
+from tkinter import simpledialog
+
 
 from PIL import Image, ImageTk
 
@@ -91,7 +93,7 @@ def lookup_player_by_code(code):
     Takes in:
         code (str): Player code to search in database.
     Returns:
-        str | None: Player name if found, else None.
+        str: Player name if found, else None.
     """
     return
 
@@ -105,6 +107,15 @@ def save_player(code, name, team):
         team (str): 'red' or 'green'
     """
     return
+
+def ask_equipment_id(parent):
+    """
+    Pops up a dialog asking for an equipment ID.
+    Returns:
+        str: Equipment ID entered, or None if canceled.
+    """
+    equipment_id = simpledialog.askinteger("Equipment ID", "Enter Equipment ID:", parent=parent)
+    return equipment_id
 
 # -----------------------
 # Main Window
@@ -200,6 +211,12 @@ def main():
                     messagebox.showwarning("No Name", "Name not Found: Please enter a name before continuing.")
                     return
 
+                # Ask for equipment ID
+                equipment_id = ask_equipment_id(n.winfo_toplevel())
+                if equipment_id is None:  # User canceled
+                    messagebox.showwarning("No Equipment ID", "You must enter a valid equipment ID.")
+                    return
+                
                 save_player(code, name, team)
 
                 # Enable next row if available
