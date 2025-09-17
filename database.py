@@ -1,5 +1,8 @@
 import sqlite3
 
+# Helpful documentation about the sqlite3 library
+# https://docs.python.org/3/library/sqlite3.html#module-sqlite3
+
 # Return DB
 def get_db():
     conn = sqlite3.connect('players.db')
