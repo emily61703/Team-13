@@ -1,1 +1,5 @@
+# folder created by pycharm
 /.venv/
+
+# ignore DB
+*.db
