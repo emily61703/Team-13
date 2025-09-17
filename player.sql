@@ -1,4 +1,3 @@
-
 --Create table
 CREATE TABLE players (
   id INT,
