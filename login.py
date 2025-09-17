@@ -2,8 +2,9 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import simpledialog
 
-
 from PIL import Image, ImageTk
+
+import database
 
 # Create object
 splash_window = Tk()
@@ -87,26 +88,34 @@ def create_player_entry(num_player, team,  login_window):
         player_name.bind("<Return>", lambda event, c=player_code, n=player_name: save_player(c, n, "green"))
         player_entries["green"].append((player_code, player_name))
 
+# NEEDS WORK AND DOES NOT CURRENTLY WORK!!!
 def lookup_player_by_code(code):
-    """
-    Placeholder for database lookup logic.
-    Takes in:
-        code (str): Player code to search in database.
-    Returns:
-        str: Player name if found, else None.
-    """
-    return
+    return database.lookup_player(code)
 
-                
+
+# Handles saving to DB from strings
 def save_player(code, name, team):
-    """
-    Save a single player's code and name to the database.
-    Takes in:
-        code_entry (Entry): Tkinter Entry widget for code.
-        name_entry (Entry): Tkinter Entry widget for name.
-        team (str): 'red' or 'green'
-    """
-    return
+    if code and name:
+        try:
+            database.add_player(int(code), name)
+            print(f"Saved player: {name} with code {code}")
+        except ValueError:
+            print(f"Error: Player code '{code}' must be a number")
+        except Exception as e:
+            print(f"Error saving player {name}: {e}")
+
+# Handles saving to DB from widget objects
+def save_player_from_widgets(code_entry, name_entry, team):
+    code = code_entry.get().strip()
+    name = name_entry.get().strip()
+    if code and name:
+        try:
+            database.add_player(int(code), name)
+            messagebox.showinfo("Success", f"Player {name} saved!")
+        except ValueError:
+            messagebox.showwarning("Error", "Player code must be a number")
+        except Exception as e:
+            messagebox.showwarning("Error", f"Could not save player: {e}")
 
 def ask_equipment_id(parent):
     """
@@ -216,8 +225,8 @@ def main():
                 if equipment_id is None:  # User canceled
                     messagebox.showwarning("No Equipment ID", "You must enter a valid equipment ID.")
                     return
-                
-                save_player(code, name, team)
+
+                save_player_from_widgets(c, n, team)
 
                 # Enable next row if available
                 if idx + 1 < len(entries):
