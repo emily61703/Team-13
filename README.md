@@ -10,9 +10,9 @@ This application allows for 2 devices to access to register player codenames thr
 using any command line
 enter: python login.py
 4. Features:
-Splash Screen,
-Player Entry,
-,Database Integrations
-,UDP Broadcasting
+Splash Screen, 
+Player Entry, 
+Database Integrations, 
+UDP Broadcasting
 
 	
