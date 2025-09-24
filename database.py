@@ -1,26 +1,44 @@
-import sqlite3
+import psycopg2
 
-# Helpful documentation about the sqlite3 library
-# https://docs.python.org/3/library/sqlite3.html#module-sqlite3
+# Connection parameters
+DB_HOST = 'localhost'
+DB_NAME = 'photon'
+DB_USER = 'postgres'
+DB_PASS = ''
 
-# Return DB
-def get_db():
-    conn = sqlite3.connect('players.db')
-    conn.execute('CREATE TABLE IF NOT EXISTS players (id INT, codename VARCHAR(30))')
-    conn.execute('INSERT OR IGNORE INTO players VALUES (1, "Opus")')
-    conn.commit()
-    return conn
+def get_connection():
+    return psycopg2.connect(
+        host=DB_HOST,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASS
+    )
 
-# Add player to DB
+# Lookup player by player ID
+# Returns result, otherwise return None
+def lookup_player(player_id):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT codename FROM players WHERE id = %s", (player_id,))
+        result = cursor.fetchone()
+        conn.close()
+        return result[0] if result else None
+    except Exception as e:
+        print(f"Database lookup error: {e}")
+        return None
+
+# Add player to DB, accepting ID and codename
+# Returns boolean True if successful, False otherwise
 def add_player(player_id, codename):
-    conn = get_db()
-    conn.execute('INSERT INTO players VALUES (?, ?)', (player_id, codename))
-    conn.commit()
-    conn.close()
-
-# If player codename found in DB, return result
-def lookup_player(codename):
-    conn = get_db()
-    result = conn.execute('SELECT id FROM players WHERE codename = ?', (codename,)).fetchone()
-    conn.close()
-    return result[0] if result else None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO players (id, codename) VALUES (%s, %s)",
+                      (player_id, codename))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Database add error: {e}")
+        return False
