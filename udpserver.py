@@ -1,5 +1,6 @@
 import socket
 import json
+import sqlite3
 
 # Server Configuration
 localIP = "0.0.0.0"  # Listen on all available network interfaces
@@ -25,7 +26,12 @@ def handle_player_message(message_bytes):
             print(f"Equipment Code: {message['equipment']}")
             print(f"Team: {message['team']}")
             print(f"Timestamp: {message['timestamp']}")
+            
+            #Save to the Database
+            save_player_data(message['player_id'], message['equipment'], 
+                message['team'], message['timestamp'])
             return True
+
     except json.JSONDecodeError:
         print("Error: Invalid JSON message format")
     except KeyError:
@@ -41,6 +47,10 @@ try:
     # Bind socket to address and port
     UDPServerSocket.bind((localIP, localPort))
     print(f"UDP server listening on port {localPort}")
+    
+    # Initializing Database
+    init_database()
+    print("Database initialized")
 
     # Main server loop
     while True:
@@ -69,7 +79,34 @@ finally:
     UDPServerSocket.close()
     print("Server shut down")
 
-# INTEGRATION TASKS STILL TO DO:
-# - connect UDP broadcast to database updates (done)
-# - add network selection to GUI
-# - test on multiple devices on same network
+def init_database():
+    """Create a simple database to store player equipment data"""
+    conn = sqlite3.connect('players.db')
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS player_equipment (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            player_id TEXT,
+            equipment_code TEXT,
+            team TEXT,
+            timestamp TEXT
+        )
+    ''')
+    
+    conn.commit()
+    conn.close()
+
+def save_player_data(player_id, equipment, team, timestamp):
+    """Save received player data to database"""
+    conn = sqlite3.connect('players.db')
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        INSERT INTO player_equipment (player_id, equipment_code, team, timestamp)
+        VALUES (?, ?, ?, ?)
+    ''', (player_id, equipment, team, timestamp))
+    
+    conn.commit()
+    conn.close()
+    print(f"Player {player_id} data saved to database")
