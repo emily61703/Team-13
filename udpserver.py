@@ -1,41 +1,75 @@
-# CURRENTLY A WORK IN PROGRESS, THIS IS ONLY A COPY FROM DR. STROTHER
-import socket 
+import socket
+import json
 
-localIP = "0.0.0.0"
-localPort = 7501 # needs to match the client port
-bufferSize = 1024
-messageFromServer = "Hello client"
-bytesToSend = str.encode(messageFromServer)
+# Server Configuration
+localIP = "0.0.0.0"  # Listen on all available network interfaces
+localPort = 7501     # Port number - must match client's port
+bufferSize = 1024    # Maximum size of received message in bytes
 
-# create a datagram socket
+# Initialize response message
+messageFromServer = "Player equipment received"  # Acknowledgment message
+bytesToSend = str.encode(messageFromServer)     # Convert to bytes for transmission
+
+def handle_player_message(message_bytes):
+    """
+    Process received player equipment messages
+    """
+    try:
+        # Decode JSON message from bytes
+        message = json.loads(message_bytes.decode())
+        
+        if message["type"] == "new_player":
+            # Extract and display player information
+            print("\nNew Player Equipment Broadcast Received:")
+            print(f"Player ID: {message['player_id']}")
+            print(f"Equipment Code: {message['equipment']}")
+            print(f"Team: {message['team']}")
+            print(f"Timestamp: {message['timestamp']}")
+            return True
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON message format")
+    except KeyError:
+        print("Error: Missing required fields in message")
+    except Exception as e:
+        print(f"Error processing message: {e}")
+    return False
+
+# Create UDP socket
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
-# bind to address and ip
-UDPServerSocket.bind((localIP, localPort))
+try:
+    # Bind socket to address and port
+    UDPServerSocket.bind((localIP, localPort))
+    print(f"UDP server listening on port {localPort}")
 
-print("UDP server up and listening")
+    # Main server loop
+    while True:
+        try:
+            # Wait for and receive incoming datagram
+            bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
+            message = bytesAddressPair[0]    # Message content
+            address = bytesAddressPair[1]    # Sender's address (IP, port)
 
-# listen for incoming datagrams
-while(True):
-    # wait for and recieve message from client
-    bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-    message = bytesAddressPair[0] # message
-    address = bytesAddressPair[1]   # address 
+            # Process the received message
+            if handle_player_message(message):
+                # Send acknowledgment back to client
+                UDPServerSocket.sendto(bytesToSend, address)
+                print(f"Acknowledgment sent to {address}")
 
-    # format recieved message and client address
-    clientMsg = "Message from Client:{}".format(message)
-    clientIP  = "Client IP Address:{}".format(address)
+        except socket.error as e:
+            print(f"Socket error occurred: {e}")
+            continue
 
-    # print message and client address to console
-    print(clientMsg)
-    print(clientIP)
-
-    # send a reply to the client
-    UDPServerSocket.sendto(bytesToSend, address)
-
-UDPServerSocket.close()
+except KeyboardInterrupt:
+    print("\nServer shutdown requested")
+except Exception as e:
+    print(f"Server error: {e}")
+finally:
+    # Clean up resources
+    UDPServerSocket.close()
+    print("Server shut down")
 
 # INTEGRATION TASKS STILL TO DO:
-# - connect UDP broadcast to database updates
+# - connect UDP broadcast to database updates (done)
 # - add network selection to GUI
 # - test on multiple devices on same network

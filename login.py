@@ -5,6 +5,8 @@ from tkinter import simpledialog
 from PIL import Image, ImageTk
 
 import database
+from udpclient import UDPBroadcaster
+
 
 # Create object
 splash_window = Tk()
@@ -29,6 +31,9 @@ player_entries = {"red": [], "green": []}
 
 start_row = 6
 player_start_row = start_row+2
+
+# Create UDP broadcaster instance
+udp_broadcaster = UDPBroadcaster()
 
 # -----------------------
 # Functions
@@ -111,6 +116,14 @@ def save_player_from_widgets(code_entry, name_entry, team):
     if code and name:
         try:
             database.add_player(int(code), name)
+
+             # Broadcast the new player's equipment code
+            udp_broadcaster.broadcast_player_equipment(
+                player_id=name,
+                equipment_code=code,
+                team=team
+            )
+            
             messagebox.showinfo("Success", f"Player {name} saved!")
         except ValueError:
             messagebox.showwarning("Error", "Player code must be a number")
@@ -125,6 +138,20 @@ def ask_equipment_id(parent):
     """
     equipment_id = simpledialog.askinteger("Equipment ID", "Enter Equipment ID:", parent=parent)
     return equipment_id
+
+# -----------------------
+# This was for testing, we can remove once we test it works!! - k
+# -----------------------
+def verify_broadcast(name, code, team):
+    """Verify UDP broadcast was successful"""
+    try:
+        success = udp_broadcaster.broadcast_player_equipment(name, code, team)
+        if success:
+            print(f"Successfully broadcasted player: {name} ({code}) on team {team}")
+        else:
+            print("Broadcast failed")
+    except Exception as e:
+        print(f"Broadcast error: {e}")
 
 # -----------------------
 # Main Window
