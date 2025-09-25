@@ -1,17 +1,13 @@
 import psycopg2
 
 # Connection parameters
-DB_HOST = 'localhost'
 DB_NAME = 'photon'
-DB_USER = 'postgres'
-DB_PASS = ''
+DB_USER = 'student'
 
 def get_connection():
     return psycopg2.connect(
-        host=DB_HOST,
         database=DB_NAME,
         user=DB_USER,
-        password=DB_PASS
     )
 
 # Lookup player by player ID
