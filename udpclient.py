@@ -36,8 +36,3 @@ class UDPBroadcaster:
     def close(self):
         """ Close the UDP socket when done"""
         self.socket.close()
-
-# INTEGRATION TASKS STILL TO DO:
-# - connect UDP broadcast to database updates (done)
-# - add network selection to GUI
-# - test on multiple devices on same network

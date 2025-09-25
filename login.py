@@ -140,20 +140,6 @@ def ask_equipment_id(parent):
     return equipment_id
 
 # -----------------------
-# This was for testing, we can remove once we test it works!! - k
-# -----------------------
-def verify_broadcast(name, code, team):
-    """Verify UDP broadcast was successful"""
-    try:
-        success = udp_broadcaster.broadcast_player_equipment(name, code, team)
-        if success:
-            print(f"Successfully broadcasted player: {name} ({code}) on team {team}")
-        else:
-            print("Broadcast failed")
-    except Exception as e:
-        print(f"Broadcast error: {e}")
-
-# -----------------------
 # Main Window
 # -----------------------
 def main():
