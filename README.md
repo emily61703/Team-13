@@ -20,5 +20,30 @@ Install on Linux:
 ```bash
 sudo apt update
 sudo apt install python3 python3-pip python3-tkinter python3-venv
+```
+
+---
+
+## 3. Launching
+```
+python login.py
+```
+
+---
+
+## 4. Features
+Splash Screen
+
+Player Entry
+
+Database Integrations
+
+UDP Broadcasting
+
+
+
+
+
+
 
 
