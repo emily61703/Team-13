@@ -5,7 +5,7 @@ from tkinter import simpledialog
 from PIL import Image, ImageTk
 
 import database
-from udpclient import UDPBroadcaster
+from udpclient import broadcast_equipment
 
 
 # Create object
@@ -31,9 +31,6 @@ player_entries = {"red": [], "green": []}
 
 start_row = 6
 player_start_row = start_row+2
-
-# Create UDP broadcaster instance
-udp_broadcaster = UDPBroadcaster()
 
 # -----------------------
 # Functions
@@ -117,8 +114,8 @@ def save_player_from_widgets(code_entry, name_entry, team):
         try:
             database.add_player(int(code), name)
 
-             # Broadcast the new player's equipment code
-            udp_broadcaster.broadcast_player_equipment(
+            # Broadcast the new player's equipment code
+            broadcast_success = broadcast_equipment(
                 player_id=name,
                 equipment_code=code,
                 team=team
