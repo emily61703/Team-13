@@ -158,6 +158,9 @@ def main():
     # -----------------------
 
     def start_game():
+        # Disable start button after countdown begins
+        start_button.config(state=DISABLED)
+
         # Create label
         countdown_label = Label(login_window, text="Game start in: 15 seconds", font=("Helvetica", 20))
         countdown_label.pack()
@@ -167,10 +170,11 @@ def main():
                 countdown_label.config(text=f"Game start in: {count} seconds")
                 login_window.after(1000, countdown, count - 1)
             else:
+                # Where the actual effect of the countdown timer being completed
+                # would go!
                 countdown_label.config(text="COUNTDOWN COMPLETED!")
 
         countdown(15)
-
     
     footer_frame = Frame(login_window)
     footer_frame.pack(side=BOTTOM, fill=X)
@@ -187,11 +191,12 @@ def main():
         fg="red",
         command=clear_all_players).pack(side=LEFT, padx=10, pady=5)
     
-    Button(
+    start_button = Button(
         footer_frame,
         text="Start",
         fg="green",
-        command=start_game).pack(side=RIGHT, padx=10, pady=5)
+        command=start_game)
+    start_button.pack(side=RIGHT, padx=10, pady=5)
 
     # -----------------------
     # Add Labels for Teams
