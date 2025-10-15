@@ -7,7 +7,6 @@ from PIL import Image, ImageTk
 import database
 from udpclient import broadcast_equipment
 
-
 # Create object
 splash_window = Tk()
 
@@ -157,8 +156,21 @@ def main():
     # -----------------------
     # Footer Frame
     # -----------------------
+
     def start_game():
-       messagebox.showinfo("Get Ready","Game Starting Soon")
+        # Create label
+        countdown_label = Label(login_window, text="Game start in: 15 seconds", font=("Helvetica", 20))
+        countdown_label.pack()
+
+        def countdown(count):
+            if count > 0:
+                countdown_label.config(text=f"Game start in: {count} seconds")
+                login_window.after(1000, countdown, count - 1)
+            else:
+                countdown_label.config(text="COUNTDOWN COMPLETED!")
+
+        countdown(15)
+
     
     footer_frame = Frame(login_window)
     footer_frame.pack(side=BOTTOM, fill=X)
@@ -192,7 +204,7 @@ def main():
     Label(entry_frame, text='Player Name').grid(row=start_row+1, column=6)
 
     # -----------------------
-    # Create Inital Player Boxes
+    # Create Initial Player Boxes
     # -----------------------
     num_red_players = 15
     num_green_players = 15
