@@ -170,9 +170,17 @@ def main():
                 countdown_label.config(text=f"Game start in: {count} seconds")
                 login_window.after(1000, countdown, count - 1)
             else:
-                # Where the actual effect of the countdown timer being completed
+                                # Where the actual effect of the countdown timer being completed
                 # would go!
+                red_players = [(code_entry.get().strip(), name_entry.get().strip())
+                               for code_entry, name_entry in player_entries["red"]]
+                green_players = [(code_entry.get().strip(), name_entry.get().strip())
+                                 for code_entry, name_entry in player_entries["green"]]
+                
                 countdown_label.config(text="COUNTDOWN COMPLETED!")
+                
+                Display_PA(red_players, green_players)  # Open the play action display
+                login_window.withdraw() # Hide the login window
 
         countdown(15)
     
