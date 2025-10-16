@@ -18,8 +18,18 @@ and broadcast equipment codes through UDP.
 
 Install on Linux:  
 ```bash
-sudo apt update
-sudo apt install python3 python3-pip python3-tkinter python3-venv
+# Install Python 3 and pip (if not already installed)
+sudo apt-get install python3 python3-pip
+
+# Install tkinter for Python GUI
+sudo apt-get install python3-tk
+
+# Install PostgreSQL
+sudo apt-get install postgresql postgresql-contrib
+
+# Install Python packages
+pip3 install pillow
+pip3 install psycopg2-binary
 ```
 
 ---
