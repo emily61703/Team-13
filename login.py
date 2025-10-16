@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import simpledialog
+from PlayAction import Display_PA
 
 from PIL import Image, ImageTk
 
@@ -156,6 +157,9 @@ def main():
     # -----------------------
     # Footer Frame
     # -----------------------
+    
+    # Store reference to play action window
+    pa_window = [None]  # Using list to allow modification in nested functions
 
     def start_game():
         # Disable start button after countdown begins
@@ -170,7 +174,7 @@ def main():
                 countdown_label.config(text=f"Game start in: {count} seconds")
                 login_window.after(1000, countdown, count - 1)
             else:
-                                # Where the actual effect of the countdown timer being completed
+                # Where the actual effect of the countdown timer being completed
                 # would go!
                 red_players = [(code_entry.get().strip(), name_entry.get().strip())
                                for code_entry, name_entry in player_entries["red"]]
@@ -183,6 +187,29 @@ def main():
                 login_window.withdraw() # Hide the login window
 
         countdown(15)
+    
+    def go_to_play_action():
+        """Immediately go to play action display without countdown"""
+        red_players = [(code_entry.get().strip(), name_entry.get().strip())
+                       for code_entry, name_entry in player_entries["red"]]
+        green_players = [(code_entry.get().strip(), name_entry.get().strip())
+                         for code_entry, name_entry in player_entries["green"]]
+        
+        pa_window[0] = Display_PA(red_players, green_players)  # Open the play action display
+        
+        # Bind 'A' key on the play action window to return to login
+        if pa_window[0]:
+            pa_window[0].bind("<a>", lambda event: return_to_login())
+            pa_window[0].bind("<A>", lambda event: return_to_login())
+        
+        login_window.withdraw()  # Hide the login window
+    
+    def return_to_login():
+        """Return from play action to login screen"""
+        if pa_window[0]:
+            pa_window[0].destroy()
+            pa_window[0] = None
+        login_window.deiconify()  # Show the login window again
     
     footer_frame = Frame(login_window)
     footer_frame.pack(side=BOTTOM, fill=X)
@@ -198,6 +225,13 @@ def main():
         text="Clear All Player Entries",
         fg="red",
         command=clear_all_players).pack(side=LEFT, padx=10, pady=5)
+    
+    # NEW: Button to go directly to play action
+    Button(
+        footer_frame,
+        text="Play Action",
+        fg="blue",
+        command=go_to_play_action).pack(side=LEFT, padx=10, pady=5)
     
     start_button = Button(
         footer_frame,
@@ -276,6 +310,9 @@ def main():
     # Bind navigation separately for each team
     bind_navigation("red")
     bind_navigation("green")
+    
+    # Bind F5 key to go to play action
+    login_window.bind("<F5>", lambda event: go_to_play_action())
 
 # Open splash window
 splash_window.after(3000, main)
