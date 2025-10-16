@@ -58,7 +58,7 @@ def Display_PA(red_players, green_players):
     teams_frame.pack(fill=BOTH, expand=True)
 
     # Create both team windows
-    create_team_window(teams_frame, "red", "red", red_players)
-    create_team_window(teams_frame, "green", "green", green_players)
+    create_window(teams_frame, "red", "red", red_players)
+    create_window(teams_frame, "green", "green", green_players)
 
     play_window.mainloop()
