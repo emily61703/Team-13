@@ -34,11 +34,25 @@ def create_window(parent, team_name, team_color, players):
         ).pack(side=LEFT, fill=X, expand=True)
 
 # Diplay the play action window
-def Display_PA(red_players, green_players):
+def Display_PA(red_players, green_players, return_to_login_callback):
     play_window = Tk()
     play_window.geometry("1400x900")
     play_window.title("Play Action Display")
     play_window.configure(bg="black")
+
+    # Top frame for the button
+    top_frame = Frame(play_window, bg="black")
+    top_frame.pack(side=TOP, fill=X)
+
+    # Add a button in the top-left corner
+    Button(
+        top_frame,
+        text="Back to Login",
+        command=lambda: [play_window.destroy(), return_to_login_callback()],
+        bg="red",
+        fg="white",
+        font=("Helvetica", 12, "bold")
+    ).pack(side=LEFT, padx=10, pady=10)  # Use pack with padding for proper spacing
 
     # Main container
     main_frame = Frame(play_window, bg="black")
