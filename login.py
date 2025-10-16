@@ -184,20 +184,35 @@ def main():
 
                 # Open the play action display and pass the main function as a callback
                 Display_PA(red_players, green_players, return_to_login_callback=main)
-                login_window.withdraw()  # Hide the login window
 
         countdown(15)
-    
+
     def go_to_play_action():
         """Immediately go to play action display without countdown"""
+        # Check if play action window already exists and is open
+        if pa_window[0] is not None:
+            try:
+                if pa_window[0].winfo_exists():
+                    pa_window[0].deiconify()  # Show if hidden
+                    pa_window[0].lift()  # Bring to front
+                    return
+            except:
+                # Window was destroyed, continue to create new one
+                pass
+        
         red_players = [(code_entry.get().strip(), name_entry.get().strip())
-                       for code_entry, name_entry in player_entries["red"]]
+                    for code_entry, name_entry in player_entries["red"]]
         green_players = [(code_entry.get().strip(), name_entry.get().strip())
-                         for code_entry, name_entry in player_entries["green"]]
+                        for code_entry, name_entry in player_entries["green"]]
 
-        # Open the play action display and pass the main function as a callback
-        Display_PA(red_players, green_players, return_to_login_callback=main)
-        login_window.withdraw()  # Hide the login window
+        # Create callback that clears the window reference
+        def on_return_to_login():
+            pa_window[0] = None
+            login_window.deiconify()  # Show login window
+        
+        # Open the play action display and store the window reference
+        pa_window[0] = Display_PA(red_players, green_players, return_to_login_callback=on_return_to_login)
+        # Don't hide the login window anymore
     
     footer_frame = Frame(login_window)
     footer_frame.pack(side=BOTTOM, fill=X)

@@ -1,6 +1,9 @@
 from tkinter import *
 import database
 
+# Global variable to store the play action window
+play_window = None
+
 # Create a team window with player list
 def create_window(parent, team_name, team_color, players):
     frame = Frame(parent, bg="black", bd=2, relief="solid",
@@ -33,9 +36,18 @@ def create_window(parent, team_name, team_color, players):
             anchor="w"
         ).pack(side=LEFT, fill=X, expand=True)
 
-# Diplay the play action window
+# Display the play action window
 def Display_PA(red_players, green_players, return_to_login_callback):
-    play_window = Tk()
+    global play_window
+
+    # Check if the play window already exists
+    if play_window is not None and play_window.winfo_exists():
+        play_window.deiconify()  # Bring the existing window to the front
+        play_window.lift()  # Raise the window to the top
+        return play_window  # Return existing window
+
+    # Use Toplevel instead of Tk to keep the login screen visible
+    play_window = Toplevel()
     play_window.geometry("1400x900")
     play_window.title("Play Action Display")
     play_window.configure(bg="black")
@@ -48,12 +60,35 @@ def Display_PA(red_players, green_players, return_to_login_callback):
     Button(
         top_frame,
         text="Back to Login",
-        command=lambda: [play_window.destroy(), return_to_login_callback()],
+        command=lambda: [play_window.withdraw(), return_to_login_callback()],
         bg="red",
         fg="white",
         font=("Helvetica", 12, "bold")
-    ).pack(side=LEFT, padx=10, pady=10)  # Use pack with padding for proper spacing
+    ).pack(side=LEFT, padx=10, pady=10)
 
+    # Main container
+    main_frame = Frame(play_window, bg="black")
+    main_frame.pack(fill=BOTH, expand=True, padx=20, pady=20)
+
+    # Title
+    Label(
+        main_frame,
+        text="GAME IN PROGRESS",
+        font=("Helvetica", 24, "bold"),
+        fg="white",
+        bg="black"
+    ).pack(pady=10)
+
+    # Teams container
+    teams_frame = Frame(main_frame, bg="black")
+    teams_frame.pack(fill=BOTH, expand=True)
+
+    # Create both team windows
+    create_window(teams_frame, "red", "red", red_players)
+    create_window(teams_frame, "green", "green", green_players)
+
+    return play_window  # Return the window reference
+    
     # Main container
     main_frame = Frame(play_window, bg="black")
     main_frame.pack(fill=BOTH, expand=True, padx=20, pady=20)
