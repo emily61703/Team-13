@@ -180,8 +180,6 @@ def main():
                 green_players = [(code_entry.get().strip(), name_entry.get().strip())
                                  for code_entry, name_entry in player_entries["green"]]
 
-                countdown_label.config(text="COUNTDOWN COMPLETED!")
-
                 # Open the play action display and pass the main function as a callback
                 Display_PA(red_players, green_players, return_to_login_callback=main)
 
