@@ -37,7 +37,7 @@ def create_window(parent, team_name, team_color, players):
         ).pack(side=LEFT, fill=X, expand=True)
 
 # Display the play action window
-def Display_PA(red_players, green_players, return_to_login_callback):
+def display_pa(red_players, green_players, return_to_login_callback):
     global play_window
 
     # Check if the play window already exists
@@ -62,7 +62,7 @@ def Display_PA(red_players, green_players, return_to_login_callback):
         text="Back to Login",
         command=lambda: [play_window.withdraw(), return_to_login_callback()],
         bg="red",
-        fg="white",
+        fg="black",
         font=("Helvetica", 12, "bold")
     ).pack(side=LEFT, padx=10, pady=10)
 
