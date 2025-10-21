@@ -56,7 +56,7 @@ def save_all_players():
             code = code_entry.get().strip()
             name = name_entry.get().strip()
             if code and name:
-                save_player(code, name, team)
+                save_player(code, name)
 
 def clear_all_players():
     # Clear on screen textboxes
