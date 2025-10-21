@@ -1,4 +1,5 @@
-# main.py: This is the main entry point of our program! We are hand
+# main.py: This is the main entry point of our program! We are handling the
+#          splash screen and transitioning to the login screen
 
 from tkinter import Tk, Label
 from PIL import Image, ImageTk
