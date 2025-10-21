@@ -1,15 +1,17 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import simpledialog
-from PlayAction import Display_PA
 
 from PIL import Image, ImageTk
 
 import database
 from udpclient import broadcast_equipment
 
-# Create object
+from play_action import display_pa
+
+# Create windows
 splash_window = Tk()
+login_window = None
 
 # Adjust size
 width = 1000
@@ -140,10 +142,28 @@ def ask_equipment_id(parent):
 # Main Window
 # -----------------------
 def main():
-    # Close splash window
-    splash_window.destroy()
+    # Collect our global windows so we always reference the same one!
+    global splash_window, login_window
 
-    # Open login window
+    # Close splash window IF it is open
+    if splash_window is not None:
+        try:
+            splash_window.destroy()
+            splash_window = None
+        except:
+            pass
+
+    # If we already have a login_window, return to the same one!
+    if login_window is not None:
+        try:
+            if login_window.winfo_exists():
+                login_window.deiconify()
+                login_window.lift()
+                return
+        except:
+            pass
+
+    # If there is no login_window, create it!
     login_window = Tk()
     login_window.geometry(screen_size)
     login_window.title("Login")
@@ -157,60 +177,67 @@ def main():
     # -----------------------
     # Footer Frame
     # -----------------------
-    
-    # Store reference to play action window
-    pa_window = [None]  # Using list to allow modification in nested functions
+
+    countdown_id = [None]
+    countdown_label_ref = [None]
 
     def start_game():
         # Disable start button after countdown begins
         start_button.config(state=DISABLED)
 
         # Create label
-        countdown_label = Label(login_window, text="Game start in: 15 seconds", font=("Helvetica", 20))
+        countdown_label = Label(login_window, text="Game start in: 30 seconds", font=("Helvetica", 20))
         countdown_label.pack()
+        countdown_label_ref[0] = countdown_label
 
         def countdown(count):
             if count > 0:
                 countdown_label.config(text=f"Game start in: {count} seconds")
-                login_window.after(1000, countdown, count - 1)
+                countdown_id[0] = login_window.after(1000, countdown, count - 1)
             else:
+                # Destroy the countdown label
+                if countdown_label_ref[0] is not None:
+                    countdown_label_ref[0].destroy()
+
+                # Clear the ID and label reference
+                countdown_id[0] = None
+                countdown_label_ref[0] = None
+
                 # Gather player data
                 red_players = [(code_entry.get().strip(), name_entry.get().strip())
                                for code_entry, name_entry in player_entries["red"]]
                 green_players = [(code_entry.get().strip(), name_entry.get().strip())
                                  for code_entry, name_entry in player_entries["green"]]
 
-                # Open the play action display and pass the main function as a callback
-                Display_PA(red_players, green_players, return_to_login_callback=main)
+                # Callback used for resetting the UI when returning
+                def on_return_from_countdown():
+                    start_button.config(state=NORMAL) # Enable the start button
 
-        countdown(15)
+                # Open the play action display and pass the main function as a callback
+                display_pa(red_players, green_players, return_to_login_callback=on_return_from_countdown)
+
+        countdown(5)
 
     def go_to_play_action():
         """Immediately go to play action display without countdown"""
-        # Check if play action window already exists and is open
-        if pa_window[0] is not None:
-            try:
-                if pa_window[0].winfo_exists():
-                    pa_window[0].deiconify()  # Show if hidden
-                    pa_window[0].lift()  # Bring to front
-                    return
-            except:
-                # Window was destroyed, continue to create new one
-                pass
+        # Cancel a running countdown, if it exists
+        if countdown_id[0] is not None:
+            login_window.after_cancel(countdown_id[0])
+            countdown_id[0] = None
+
+        # Destroy the countdown label, if it exists
+        if countdown_label_ref[0] is not None:
+            countdown_label_ref[0].destroy()
+            countdown_label_ref[0] = None
+
+        start_button.config(state=NORMAL)
         
         red_players = [(code_entry.get().strip(), name_entry.get().strip())
                     for code_entry, name_entry in player_entries["red"]]
         green_players = [(code_entry.get().strip(), name_entry.get().strip())
                         for code_entry, name_entry in player_entries["green"]]
 
-        # Create callback that clears the window reference
-        def on_return_to_login():
-            pa_window[0] = None
-            login_window.deiconify()  # Show login window
-        
-        # Open the play action display and store the window reference
-        pa_window[0] = Display_PA(red_players, green_players, return_to_login_callback=on_return_to_login)
-        # Don't hide the login window anymore
+        display_pa(red_players, green_players, return_to_login_callback=lambda: None)
     
     footer_frame = Frame(login_window)
     footer_frame.pack(side=BOTTOM, fill=X)
