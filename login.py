@@ -92,13 +92,7 @@ def create_player_entry(num_player, team,  login_window):
         player_name.bind("<Return>", lambda event, c=player_code, n=player_name: save_player(c, n, "green"))
         player_entries["green"].append((player_code, player_name))
 
-# NEEDS WORK AND DOES NOT CURRENTLY WORK!!!
-def lookup_player_by_code(code):
-    return database.lookup_player(code)
-
-
-# Handles saving to DB from strings
-def save_player(code, name, team):
+def save_player(code, name):
     if code and name:
         try:
             database.add_player(int(code), name)
@@ -183,7 +177,7 @@ def main():
 
     def start_game():
         # Disable start button after countdown begins
-        start_button.config(state=DISABLED)
+        start_button.config(state="disabled")
 
         # Create label
         countdown_label = Label(login_window, text="Game start in: 30 seconds", font=("Helvetica", 20))
@@ -211,7 +205,7 @@ def main():
 
                 # Callback used for resetting the UI when returning
                 def on_return_from_countdown():
-                    start_button.config(state=NORMAL) # Enable the start button
+                    start_button.config(state="normal") # Enable the start button
 
                 # Open the play action display and pass the main function as a callback
                 display_pa(red_players, green_players, return_to_login_callback=on_return_from_countdown)
@@ -230,7 +224,7 @@ def main():
             countdown_label_ref[0].destroy()
             countdown_label_ref[0] = None
 
-        start_button.config(state=NORMAL)
+        start_button.config(state="normal")
         
         red_players = [(code_entry.get().strip(), name_entry.get().strip())
                     for code_entry, name_entry in player_entries["red"]]
@@ -300,7 +294,7 @@ def main():
             def on_code_enter(event, c=code_entry, n=name_entry):
                 code = c.get().strip()
                 if code:
-                    returned_name = lookup_player_by_code(code)
+                    returned_name = database.lookup_player(code)
                     if returned_name is None:
                         messagebox.showwarning("No Name", "Name not Found: Please enter a name before continuing.")
                     else:
