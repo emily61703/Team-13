@@ -36,7 +36,7 @@ pip3 install psycopg2-binary
 
 ## 3. Launching
 ```
-python login.py
+python main.py
 ```
 
 ---
