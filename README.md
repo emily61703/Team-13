@@ -1,4 +1,4 @@
-<h2>**Photon - The Ultimate Game on Planet Earth**</h2>
+# **Photon - The Ultimate Game on Planet Earth**
 
 **Authors:** Aaron Tran, Emily Becker, Kaylynn Charles, Sam Day  
 
