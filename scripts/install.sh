@@ -1,5 +1,7 @@
 #!/bin/bash
-# Laser Tag System Installation (Linux)
+# Laser Tag System Installation
+
+cd "$(dirname "$0")/.."
 
 sudo apt-get update -qq
 sudo apt-get install -y -qq python3 python3-pip python3-tk python3-venv > /dev/null 2>&1

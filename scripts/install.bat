@@ -1,6 +1,8 @@
 @echo off
 REM Laser Tag System Installation (Windows)
 
+cd /d "%~dp0\.."
+
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
     echo Error: Python 3 not found. Install from python.org
