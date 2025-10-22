@@ -19,7 +19,7 @@ def main():
     splash_window.configure(bg="black")
 
     # Open the image file
-    image = Image.open("logo.jpg")
+    image = Image.open("assets/logo.jpg")
 
     # Scale/resize image
     img_width, img_height = image.size
