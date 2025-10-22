@@ -4,53 +4,71 @@
 
 ---
 
-## 1. Overview
-This application allows for 2 devices to register player codenames through SQLite databases,  
-and broadcast equipment codes through UDP.  
+## Overview
+This is where a very nice description will go of the project! :)
 
 ---
 
-## 2. Requirements
-- Download **Python 3.7 or higher** (Windows/Mac)  
-- **Tkinter** (usually included with Python)  
-- Download **Pillow (PIL)** for image processing  
-- Download **Psycopg2** (Linux)  
+## Requirements
 
-Install on Linux:  
-```bash
-# Install Python 3 and pip (if not already installed)
-sudo apt-get install python3 python3-pip
+- **Python 3.7 or higher**
+- **PostgreSQL database**
+- **Debian/Ubuntu Linux** (designed for)
 
-# Install tkinter for Python GUI
-sudo apt-get install python3-tk
+### Dependencies
+- Tkinter: Python GUI framework
+- Pillow (PIL): Image processing
+- Psycopg2: PostgreSQL database adapter
 
-# Install PostgreSQL
-sudo apt-get install postgresql postgresql-contrib
+---
 
-# Install Python packages
-pip3 install pillow
-pip3 install psycopg2-binary
-```
+## Installation
+
+### Quick Setup
+
+1. **Navigate to the project directory:**
+   ```bash
+   cd ~/Desktop/team13/scripts
+   ```
+
+2. **Run the installation script:**
+   ```bash
+   bash install.sh
+   ```
+   
+   Enter your sudo password when prompted.
+
+3. **Activate the virtual environment:**
+   ```bash
+   cd ..
+   source venv/bin/activate
+   ```
+
+4. **Launch the application:**
+   ```bash
+   python3 main.py
+   ```
 
 ---
 
 ## 3. Launching
-```
-python main.py
-```
 
----
+1. **Ensure you're in the project root directory:**
+   ```bash
+   cd ~/Desktop/team13
+   ```
 
-## 4. Features
-Splash Screen
+2. **Activate the virtual environment (if not already active):**
+   ```bash
+   source venv/bin/activate
+   ```
+   
+   You should see `(venv)` at the start of your command prompt.
 
-Player Entry
-
-Database Integrations
-
-UDP Broadcasting
-
-
+3. **Run the application:**
+   ```bash
+   python3 main.py
+   ```
 
 
 
