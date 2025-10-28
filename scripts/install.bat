@@ -14,6 +14,7 @@ python -m venv venv
 call venv\Scripts\activate.bat
 python -m pip install -q --upgrade pip
 pip install -q psycopg2-binary pillow
+pip install -q pygame
 
 echo Installation complete. Run with: venv\Scripts\activate.bat ^&^& python main.py
 pause

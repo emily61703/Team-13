@@ -10,5 +10,6 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -q --upgrade pip
 pip install -q psycopg2-binary pillow
+pip install -q pygame
 
 echo "Installation complete. Run with: source venv/bin/activate && python3 main.py"

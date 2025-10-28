@@ -11,6 +11,7 @@ from tkinter import Tk, Frame, Label, Entry, Button, END, messagebox, simpledial
 import database
 from udpclient import broadcast_equipment
 from play_action_screen import display_pa
+from music_select import MusicSelector, show_music_selector, start_music
 
 # Config
 WINDOW_WIDTH = 1000
@@ -245,6 +246,9 @@ def create_countdown_logic(parent_window, start_button):
                 countdown_state["timer_id"] = None
                 countdown_state["label"] = None
 
+                # Start music when game begins
+                start_music()
+
                 # Start game
                 red_players, green_players = get_all_players()
                 display_pa(
@@ -267,6 +271,9 @@ def create_countdown_logic(parent_window, start_button):
             countdown_state["label"] = None
 
         start_button.config(state="normal")
+
+        # Start music when game begins
+        start_music()
 
         red_players, green_players = get_all_players()
         display_pa(red_players, green_players, return_to_login_callback=lambda: None)
@@ -354,6 +361,14 @@ def show_login_screen():
         text="Clear All Player Entries",
         fg="red",
         command=clear_all_players
+    ).pack(side="left", padx=10, pady=5)
+
+    # Music selection button
+    Button(
+        footer_frame,
+        text="Music Tracks",
+        fg="purple",
+        command=lambda: show_music_selector(login_window)
     ).pack(side="left", padx=10, pady=5)
 
     # Create countdown and start button
