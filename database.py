@@ -30,8 +30,12 @@ def add_player(player_id, codename):
     try:
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO players (id, codename) VALUES (%s, %s)",
-                      (player_id, codename))
+        # Use INSERT ... ON CONFLICT to prevent duplicates
+        cursor.execute("""
+            INSERT INTO players (id, codename) 
+            VALUES (%s, %s)
+            ON CONFLICT (id) DO UPDATE SET codename = EXCLUDED.codename
+        """, (player_id, codename))
         conn.commit()
         conn.close()
         return True
