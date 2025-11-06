@@ -44,8 +44,8 @@ class MusicSelector:
         """Display a window for selecting tracks"""
         if not self.all_tracks:
             messagebox.showinfo(
-                "No music Found",
-                f"No music files found in '{self.music_folder}' folder.\n\n"
+                "No Music Found",
+                f"No Music files found in '{self.music_folder}' folder.\n\n"
                 "Please add .mp3, .ogg, or .wav files to the music folder."
             )
             return
