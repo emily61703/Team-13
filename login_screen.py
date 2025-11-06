@@ -364,10 +364,10 @@ def show_login_screen():
         command=clear_all_players
     ).pack(side="left", padx=10, pady=5)
 
-    # Music selection button
+    # music selection button
     Button(
         footer_frame,
-        text="Music Tracks",
+        text="Select Music Tracks",
         fg="purple",
         command=lambda: show_music_selector(login_window)
     ).pack(side="left", padx=10, pady=5)
