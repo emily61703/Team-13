@@ -6,7 +6,7 @@ import random
 from tkinter import Toplevel, Listbox, Button, Label, Frame, MULTIPLE, END, messagebox
 
 class MusicSelector:
-    def __init__(self, music_folder="Music"):
+    def __init__(self, music_folder="assets/music/"):
         """Initialize the music selector"""
         pygame.mixer.init()
         
@@ -44,9 +44,9 @@ class MusicSelector:
         """Display a window for selecting tracks"""
         if not self.all_tracks:
             messagebox.showinfo(
-                "No Music Found", 
+                "No music Found",
                 f"No music files found in '{self.music_folder}' folder.\n\n"
-                "Please add .mp3, .ogg, or .wav files to the Music folder."
+                "Please add .mp3, .ogg, or .wav files to the music folder."
             )
             return
         
