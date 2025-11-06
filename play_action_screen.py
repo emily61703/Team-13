@@ -2,25 +2,20 @@
 
 from tkinter import Toplevel, Frame, Label, Button, LEFT, RIGHT, TOP, X, BOTH, Text, END
 from PIL import Image, ImageTk
-import socket
-import threading
 import time
 from music_select import stop_music
+from udpclient import send_game_start, send_acknowledgment
+from udpserver import udp_server
 
 # Config
 WINDOW_WIDTH = 1400
 WINDOW_HEIGHT = 900
-UDP_RECEIVE_PORT = 7501
 UDP_SEND_PORT = 7500
-BUFFER_SIZE = 1024
 GAME_DURATION = 360
 
 # Global variables
 play_window = None
-udp_thread = None
-udp_running = False
 event_display = None
-response_socket = None
 base_icon_photo = None
 
 # Game state
@@ -206,7 +201,7 @@ def start_game_timer():
     game_state["start_time"] = time.time()
 
     def update_timer():
-        if not udp_running or timer_label is None:
+        if not udp_server.running or timer_label is None:
             return
 
         elapsed = time.time() - game_state["start_time"]
@@ -251,7 +246,7 @@ def end_game():
         add_event_message("It's a Tie!", "system")
 
     add_event_message("=" * 50, "system")
-    stop_udp_listener()
+    udp_server.stop()
 
 
 def add_event_message(message, tag="system"):
@@ -275,18 +270,6 @@ def add_event_message(message, tag="system"):
         event_display.after(0, update)
     except:
         pass
-
-
-def send_acknowledgment(address, ack_code="200"):
-    """Send acknowledgment back to traffic generator"""
-    global response_socket
-    if response_socket is None:
-        return
-
-    try:
-        response_socket.sendto(ack_code.encode('utf-8'), address)
-    except Exception as e:
-        add_event_message(f"Ack send failed: {e}", "system")
 
 
 def process_hit(attacker_code, target_code):
@@ -320,84 +303,27 @@ def process_hit(attacker_code, target_code):
         update_score(attacker_team, 10)
 
 
-def udp_listener():
-    """UDP listener thread function"""
-    global udp_running, response_socket
+def handle_udp_message(message, address):
+    """Callback for incoming UDP messages"""
+    if message == "221":
+        add_event_message("Game end signal received", "system")
+        send_acknowledgment((address[0], UDP_SEND_PORT), "221")
+        end_game()
+        return
 
-    try:
-        server_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server_socket.bind(("0.0.0.0", UDP_RECEIVE_PORT))
-        server_socket.settimeout(1.0)
-
-        response_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-
-        add_event_message(f"UDP server listening on port {UDP_RECEIVE_PORT}", "system")
-        add_event_message("Sending game start signal (202)...", "system")
-        send_acknowledgment(("127.0.0.1", UDP_SEND_PORT), "202")
-        add_event_message("Game started!", "system")
-        start_game_timer()
-
-        while udp_running:
-            try:
-                data, address = server_socket.recvfrom(BUFFER_SIZE)
-
-                try:
-                    decoded = data.decode('utf-8').strip()
-
-                    if decoded == "221":
-                        add_event_message("Game end signal received", "system")
-                        send_acknowledgment((address[0], UDP_SEND_PORT), "221")
-                        end_game()
-                        break
-
-                    if ':' in decoded:
-                        attacker, target = decoded.split(':')
-                        process_hit(attacker, target)
-                        send_acknowledgment((address[0], UDP_SEND_PORT), "200")
-                    else:
-                        add_event_message(f"Unknown format: {decoded}", "system")
-                except Exception as e:
-                    add_event_message(f"Parse error: {e}", "system")
-
-            except socket.timeout:
-                continue
-            except Exception as e:
-                if udp_running:
-                    add_event_message(f"Error: {e}", "system")
-
-        server_socket.close()
-        if response_socket:
-            response_socket.close()
-        add_event_message("UDP server stopped", "system")
-
-    except Exception as e:
-        add_event_message(f"Failed to start UDP server: {e}", "system")
-
-
-def start_udp_listener():
-    """Start the UDP listener thread"""
-    global udp_thread, udp_running
-    if udp_thread is None or not udp_thread.is_alive():
-        udp_running = True
-        udp_thread = threading.Thread(target=udp_listener, daemon=True)
-        udp_thread.start()
-
-
-def stop_udp_listener():
-    """Stop the UDP listener thread"""
-    global udp_running, udp_thread
-    udp_running = False
-    if udp_thread and udp_thread.is_alive():
-        udp_thread.join(timeout=2.0)
-    udp_thread = None
+    if ':' in message:
+        attacker, target = message.split(':')
+        process_hit(attacker, target)
+        send_acknowledgment((address[0], UDP_SEND_PORT), "200")
+    else:
+        add_event_message(f"Unknown format: {message}", "system")
 
 
 def display_pa(red_players, green_players, return_to_login_callback):
     """Display the play action window"""
     global play_window, game_state, score_labels, timer_label, team_displays, event_display
 
-    stop_udp_listener()
+    udp_server.stop()
     time.sleep(0.5)
 
     game_state = {
@@ -428,7 +354,7 @@ def display_pa(red_players, green_players, return_to_login_callback):
 
     def on_closing():
         global event_display, timer_label
-        stop_udp_listener()
+        udp_server.stop()
         stop_music()
         event_display = None
         timer_label = None
@@ -462,6 +388,14 @@ def display_pa(red_players, green_players, return_to_login_callback):
 
     create_event_display(main_frame)
 
-    start_udp_listener()
+    # Start UDP server with callback
+    udp_server.start(handle_udp_message)
+
+    # Send game start signal
+    add_event_message("UDP server listening on port 7501", "system")
+    add_event_message("Sending game start signal (202)...", "system")
+    send_game_start()
+    add_event_message("Game started!", "system")
+    start_game_timer()
 
     return play_window
