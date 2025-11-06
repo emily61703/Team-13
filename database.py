@@ -4,11 +4,13 @@ import psycopg2
 DB_NAME = 'photon'
 DB_USER = 'student'
 
+
 def get_connection():
     return psycopg2.connect(
         database=DB_NAME,
         user=DB_USER,
     )
+
 
 # Lookup player by player ID
 # Returns result, otherwise return None
@@ -24,18 +26,25 @@ def lookup_player(player_id):
         print(f"Database lookup error: {e}")
         return None
 
+
 # Add player to DB, accepting ID and codename
 # Returns boolean True if successful, False otherwise
 def add_player(player_id, codename):
     try:
         conn = get_connection()
         cursor = conn.cursor()
-        # Use INSERT ... ON CONFLICT to prevent duplicates
-        cursor.execute("""
-            INSERT INTO players (id, codename) 
-            VALUES (%s, %s)
-            ON CONFLICT (id) DO UPDATE SET codename = EXCLUDED.codename
-        """, (player_id, codename))
+
+        # Check if player already exists
+        cursor.execute("SELECT id FROM players WHERE id = %s", (player_id,))
+        exists = cursor.fetchone()
+
+        if exists:
+            # Update existing player
+            cursor.execute("UPDATE players SET codename = %s WHERE id = %s", (codename, player_id))
+        else:
+            # Insert new player
+            cursor.execute("INSERT INTO players (id, codename) VALUES (%s, %s)", (player_id, codename))
+
         conn.commit()
         conn.close()
         return True
