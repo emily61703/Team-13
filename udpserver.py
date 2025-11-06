@@ -16,14 +16,13 @@ serverSocket.bind((localIP, localPort))
 broadcastSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 broadcastSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-print(f"UDP server listening on {localIP}:{localPort}")
-print(f"Broadcasting to network: {broadcast_network}")
+#print(f"UDP server listening on {localIP}:{localPort}")
+#print(f"Broadcasting to network: {broadcast_network}")
 print("Type 'network <address>' to change broadcast network")
 
 # Send initial start signal to traffic generator
 startSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 startSocket.sendto("202".encode(), ("localhost", 7500))
-print("Sent start signal to traffic generator")
 
 def broadcast_equipment(player_data):
     """Broadcast equipment data to all clients on the network"""
@@ -67,6 +66,6 @@ while True:
         break
     except Exception as e:
         print(f"Error: {e}")
-        
+
 serverSocket.close()
 broadcastSocket.close()
