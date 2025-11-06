@@ -19,11 +19,12 @@ WINDOW_HEIGHT = 800
 MAX_PLAYERS_PER_TEAM = 15
 START_ROW = 6
 PLAYER_START_ROW = START_ROW + 2
-COUNTDOWN_SECONDS = 5
+COUNTDOWN_SECONDS = 30
 
 # Global variables
 login_window = None
 player_entries = {"red": [], "green": []}
+player_equipment_map = {}
 
 # -----------------------
 # Player Management
@@ -198,6 +199,7 @@ def setup_navigation(team):
                     next_code.config(state="normal")
                     next_name.config(state="normal")
                     next_code.focus_set()
+                player_equipment_map[(t, idx)] = (str(equipment_id), name)
 
         code_entry.bind("<Return>", on_code_enter)
         name_entry.bind("<Return>", on_name_enter)
@@ -207,19 +209,18 @@ def setup_navigation(team):
 # -----------------------
 
 def get_all_players():
-    """Extract all player data from entry fields"""
+    """Extract all player data - returns (equipment_code, name) tuples"""
     red_players = [
-        (code_entry.get().strip(), name_entry.get().strip())
-        for code_entry, name_entry in player_entries["red"]
-        if code_entry.get().strip() and name_entry.get().strip()
+        player_equipment_map.get(("red", i), (None, None))
+        for i in range(len(player_entries["red"]))
+        if player_equipment_map.get(("red", i), (None, None))[0] is not None
     ]
     green_players = [
-        (code_entry.get().strip(), name_entry.get().strip())
-        for code_entry, name_entry in player_entries["green"]
-        if code_entry.get().strip() and name_entry.get().strip()
+        player_equipment_map.get(("green", i), (None, None))
+        for i in range(len(player_entries["green"]))
+        if player_equipment_map.get(("green", i), (None, None))[0] is not None
     ]
     return red_players, green_players
-
 
 def create_countdown_logic(parent_window, start_button):
     """Create countdown logic for game start"""
