@@ -323,7 +323,6 @@ def handle_udp_message(message, address):
 
         if is_friendly_fire:
             send_acknowledgment((address[0], UDP_SEND_PORT), "200")
-            add_event_message("Sent second acknowledgment for friendly fire", "system")
     else:
         add_event_message(f"Unknown format: {message}", "system")
 
