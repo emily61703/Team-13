@@ -168,7 +168,7 @@ class MusicSelector:
         
         Button(
             button_frame,
-            text="Cancel",
+            text="Close",
             command=window.destroy,
             fg="red",
             width=12
