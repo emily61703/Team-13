@@ -108,7 +108,7 @@ def create_timer_display(parent):
     Label(
         timer_frame,
         text="Time Remaining",
-        font=("Helvetica", 16),
+        font=("Helvetica", 20),
         fg="white",
         bg="#1a1a1a"
     ).pack()
@@ -117,7 +117,7 @@ def create_timer_display(parent):
         timer_frame,
         text="6:00",
         font=("Helvetica", 36, "bold"),
-        fg="#4CAF50",
+        fg="white",
         bg="#1a1a1a"
     )
     timer_label.pack()
@@ -135,7 +135,7 @@ def create_event_display(parent):
     Label(
         frame,
         text="Events",
-        font=("Helvetica", 18, "bold"),
+        font=("Helvetica", 22, "bold"),
         fg="white",
         bg="#1a1a1a"
     ).pack(pady=(0, 10))
@@ -144,7 +144,7 @@ def create_event_display(parent):
         frame,
         bg="#0a0a0a",
         fg="#888888",
-        font=("Monaco", 10),
+        font=("Monaco", 16),
         state="disabled",
         wrap="word",
         padx=15,
@@ -368,7 +368,7 @@ def display_pa(red_players, green_players, return_to_login_callback):
 
     Button(
         top_frame,
-        text="Back to Login",
+        text="Exit",
         command=on_closing,
         bg="red",
         fg="black",
@@ -383,8 +383,8 @@ def display_pa(red_players, green_players, return_to_login_callback):
     teams_frame = Frame(main_frame, bg="#1a1a1a")
     teams_frame.pack(fill=BOTH, expand=True, pady=(0, 10))
 
-    create_team_display(teams_frame, "red", "red", red_players)
-    create_team_display(teams_frame, "green", "green", green_players)
+    create_team_display(teams_frame, "red team", "red", red_players)
+    create_team_display(teams_frame, "green team", "green", green_players)
 
     create_event_display(main_frame)
 
