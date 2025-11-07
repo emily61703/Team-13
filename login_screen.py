@@ -11,10 +11,10 @@ from tkinter import Tk, Frame, Label, Entry, Button, END, messagebox, simpledial
 import database
 from udpclient import broadcast_equipment
 from play_action_screen import display_pa
-from music_select import MusicSelector, show_music_selector, start_music
+from music_select import show_music_selector, start_music
 
 # Config
-WINDOW_WIDTH = 1000
+WINDOW_WIDTH = 1100
 WINDOW_HEIGHT = 800
 MAX_PLAYERS_PER_TEAM = 15
 START_ROW = 6
@@ -25,10 +25,6 @@ COUNTDOWN_SECONDS = 30
 login_window = None
 player_entries = {"red": [], "green": []}
 player_equipment_map = {}
-
-# -----------------------
-# Player Management
-# -----------------------
 
 def save_player(code, name, team=None, equipment_id=None, show_dialog=False):
     """
@@ -124,10 +120,6 @@ def ask_equipment_id(parent):
         parent=parent
     )
 
-# -----------------------
-# UI Creation
-# -----------------------
-
 def create_player_entry(num_player, team, parent_frame):
     """Create a single player entry row"""
     global player_entries
@@ -204,10 +196,6 @@ def setup_navigation(team):
         code_entry.bind("<Return>", on_code_enter)
         name_entry.bind("<Return>", on_name_enter)
 
-# -----------------------
-# Game Start Logic
-# -----------------------
-
 def get_all_players():
     """Extract all player data - returns (equipment_code, name) tuples"""
     red_players = [
@@ -281,10 +269,6 @@ def create_countdown_logic(parent_window, start_button):
 
     return start_countdown, skip_to_play_action
 
-# -----------------------
-# Main Window
-# -----------------------
-
 def show_login_screen():
     """Create and display the login screen"""
     global login_window, player_entries
@@ -307,9 +291,6 @@ def show_login_screen():
     login_window.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
     login_window.title("Login")
 
-    # -----------------------
-    # Player Entry Frame
-    # -----------------------
     outer_container = Frame(login_window)
     outer_container.pack(side="top", fill="both", expand=True)
 
@@ -344,9 +325,6 @@ def show_login_screen():
     setup_navigation("red")
     setup_navigation("green")
 
-    # -----------------------
-    # Footer Frame
-    # -----------------------
     footer_frame = Frame(login_window)
     footer_frame.pack(side="bottom", fill="x")
 
