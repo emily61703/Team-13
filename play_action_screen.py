@@ -8,8 +8,8 @@ from udpclient import send_game_start, send_acknowledgment
 from udpserver import udp_server
 
 # Config
-WINDOW_WIDTH = 1400
-WINDOW_HEIGHT = 900
+WINDOW_WIDTH = 1000
+WINDOW_HEIGHT = 800
 UDP_SEND_PORT = 7500
 GAME_DURATION = 360
 
@@ -108,7 +108,7 @@ def create_timer_display(parent):
     Label(
         timer_frame,
         text="Time Remaining",
-        font=("Helvetica", 14),
+        font=("Helvetica", 16),
         fg="white",
         bg="#1a1a1a"
     ).pack()
