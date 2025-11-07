@@ -228,7 +228,7 @@ def start_game_timer():
 
 def end_game():
     """Handle game end"""
-    add_event_message("=" * 50, "system")
+    add_event_message("=" * 10, "system")
     add_event_message("Game Over!", "system")
     add_event_message(f"Red Team: {game_state['red_score']} points", "red")
     add_event_message(f"Green Team: {game_state['green_score']} points", "green")
@@ -245,7 +245,9 @@ def end_game():
     else:
         add_event_message("It's a Tie!", "system")
 
-    add_event_message("=" * 50, "system")
+    add_event_message("=" * 10, "system")
+
+    send_acknowledgment(("127.0.0.1", UDP_SEND_PORT), "221")
     udp_server.stop()
 
 
@@ -362,6 +364,7 @@ def display_pa(red_players, green_players, return_to_login_callback):
 
     def on_closing():
         global event_display, timer_label
+        send_acknowledgment(("127.0.0.1", UDP_SEND_PORT), "221")
         udp_server.stop()
         stop_music()
         event_display = None
