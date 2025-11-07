@@ -279,28 +279,33 @@ def process_hit(attacker_code, target_code):
     target_name = get_player_name(target_code)
     target_team = get_player_team(target_code)
 
+    is_friendly_fire = False
+
     if target_code == "43":
         add_event_message(f"{attacker_name} hit Red Base!", "base")
         add_base_icon(attacker_code)
         if attacker_team == "green":
             update_score("green", 100)
-        return
+        return is_friendly_fire
 
     if target_code == "53":
         add_event_message(f"{attacker_name} hit Green Base!", "base")
         add_base_icon(attacker_code)
         if attacker_team == "red":
             update_score("red", 100)
-        return
+        return is_friendly_fire
 
     if attacker_team == target_team and attacker_team is not None:
         add_event_message(f"Friendly Fire: {attacker_name} hit teammate {target_name}!", "friendly_fire")
         update_score(attacker_team, -10)
-        return
+        is_friendly_fire = True
+        return is_friendly_fire
 
     if attacker_team and target_team:
         add_event_message(f"{attacker_name} hit {target_name}", attacker_team)
         update_score(attacker_team, 10)
+
+    return is_friendly_fire
 
 
 def handle_udp_message(message, address):
@@ -313,8 +318,12 @@ def handle_udp_message(message, address):
 
     if ':' in message:
         attacker, target = message.split(':')
-        process_hit(attacker, target)
+        is_friendly_fire = process_hit(attacker, target)
         send_acknowledgment((address[0], UDP_SEND_PORT), "200")
+
+        if is_friendly_fire:
+            send_acknowledgment((address[0], UDP_SEND_PORT), "200")
+            add_event_message("Sent second acknowledgment for friendly fire", "system")
     else:
         add_event_message(f"Unknown format: {message}", "system")
 
