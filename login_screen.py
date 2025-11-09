@@ -15,7 +15,7 @@ from music_select import show_music_selector, start_music
 
 # Config
 WINDOW_WIDTH = 1100
-WINDOW_HEIGHT = 800
+WINDOW_HEIGHT = 550
 MAX_PLAYERS_PER_TEAM = 15
 START_ROW = 6
 PLAYER_START_ROW = START_ROW + 2

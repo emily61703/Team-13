@@ -9,7 +9,7 @@ from udpserver import udp_server
 
 # Config
 WINDOW_WIDTH = 1000
-WINDOW_HEIGHT = 800
+WINDOW_HEIGHT = 550
 UDP_SEND_PORT = 7500
 GAME_DURATION = 360
 

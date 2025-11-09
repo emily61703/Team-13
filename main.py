@@ -6,8 +6,8 @@ from PIL import Image, ImageTk
 from login_screen import show_login_screen
 
 # Config
-WINDOW_WIDTH = 1000
-WINDOW_HEIGHT = 800
+WINDOW_WIDTH = 500
+WINDOW_HEIGHT = 500
 SPLASH_DURATION = 3000
 LOGO_SCALE = 0.75  # means logo is 50% it's original size
 
