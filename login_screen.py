@@ -100,17 +100,12 @@ def clear_all_players():
     initialize_rows()
 
 def initialize_rows():
-    """Enable only the first row for each team"""
+    """Make all entry rows editable"""
     for team in ["red", "green"]:
         entries = player_entries[team]
-        for i, (code_entry, name_entry) in enumerate(entries):
-            if i == 0:
-                code_entry.config(state="normal")
-                name_entry.config(state="normal")
-                code_entry.focus_set()
-            else:
-                code_entry.config(state="disabled")
-                name_entry.config(state="disabled")
+        for code_entry, name_entry in entries:
+            code_entry.config(state="normal")
+            name_entry.config(state="normal")
 
 def ask_equipment_id(parent):
     """Prompt user for equipment ID"""
@@ -185,12 +180,6 @@ def setup_navigation(team):
 
             # Save player with equipment info
             if save_player(code, name, team=t, equipment_id=equipment_id, show_dialog=True):
-                # Enable next row if available
-                if idx + 1 < len(entries):
-                    next_code, next_name = entries[idx + 1]
-                    next_code.config(state="normal")
-                    next_name.config(state="normal")
-                    next_code.focus_set()
                 player_equipment_map[(t, idx)] = (str(equipment_id), name)
 
         code_entry.bind("<Return>", on_code_enter)
