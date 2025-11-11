@@ -5,7 +5,14 @@
 ---
 
 ## Overview
-This is where a very nice description will go of the project! :)
+- Photon is a team based multiplayer lasertag game utilizing UDP networking and Python GUI interfacing. It comes with a complete soundtrack and gameplay audiofeedback. 
+### Core Gameplay:
+- Team Composition, Hit Detection, Base Capturing
+### Scoring:
+- Normal Hit: +10
+- Base Capture: +10
+- Friendly Fire: -10
+
 
 ---
 

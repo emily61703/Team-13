@@ -6,10 +6,11 @@ import time
 from music_select import stop_music
 from udpclient import send_game_start, send_acknowledgment
 from udpserver import udp_server
+from sfx_system import soundsystem
 
 # Config
 WINDOW_WIDTH = 1000
-WINDOW_HEIGHT = 550
+WINDOW_HEIGHT = 800
 UDP_SEND_PORT = 7500
 GAME_DURATION = 360
 
@@ -288,6 +289,7 @@ def process_hit(attacker_code, target_code):
         add_base_icon(attacker_code)
         if attacker_team == "green":
             update_score("green", 100)
+            soundsystem.play_helmet_sound('hit')
         return is_friendly_fire
 
     if target_code == "53":
@@ -295,17 +297,24 @@ def process_hit(attacker_code, target_code):
         add_base_icon(attacker_code)
         if attacker_team == "red":
             update_score("red", 100)
+            soundsystem.play_helmet_sound('hit')
         return is_friendly_fire
 
     if attacker_team == target_team and attacker_team is not None:
         add_event_message(f"Friendly Fire: {attacker_name} hit teammate {target_name}!", "friendly_fire")
         update_score(attacker_team, -10)
         is_friendly_fire = True
+        
+        soundsystem.play_helmet_sound('hitown')
+        
         return is_friendly_fire
 
     if attacker_team and target_team:
         add_event_message(f"{attacker_name} hit {target_name}", attacker_team)
         update_score(attacker_team, 10)
+        
+        soundsystem.play_helmet_sound('hit')
+        soundsystem.play_game_sound('gethit')
 
     return is_friendly_fire
 
@@ -364,9 +373,11 @@ def display_pa(red_players, green_players, return_to_login_callback):
 
     def on_closing():
         global event_display, timer_label
+        soundsystem.play_game_sound('exit')
         send_acknowledgment(("127.0.0.1", UDP_SEND_PORT), "221")
         udp_server.stop()
         stop_music()
+        soundsystem.cleanup()
         event_display = None
         timer_label = None
         play_window.destroy()
@@ -401,6 +412,9 @@ def display_pa(red_players, green_players, return_to_login_callback):
 
     # Start UDP server with callback
     udp_server.start(handle_udp_message)
+    
+    # Play game start sound
+    soundsystem.play_game_sound('start')
 
     # Send game start signal
     add_event_message("UDP server listening on port 7501", "system")
