@@ -11,7 +11,7 @@ from tkinter import Tk, Frame, Label, Entry, Button, END, messagebox, simpledial
 import database
 from udpclient import broadcast_equipment
 from play_action_screen import display_pa
-from music_select import show_music_selector, start_music
+from music_select import show_music_selector, start_music, trigger_music_on_countdown, reset_music_countdown_trigger
 
 # Config
 WINDOW_WIDTH = 1100
@@ -206,6 +206,9 @@ def create_countdown_logic(parent_window, start_button):
     def start_countdown():
         start_button.config(state="disabled")
 
+        # reset the music trigger for a fresh countdown
+        reset_music_countdown_trigger()
+
         countdown_label = Label(
             parent_window,
             text=f"Game start in: {COUNTDOWN_SECONDS} seconds",
@@ -217,6 +220,8 @@ def create_countdown_logic(parent_window, start_button):
         def countdown(count):
             if count > 0:
                 countdown_label.config(text=f"Game start in: {count} seconds")
+                # check if we should start music (starts once when count <= 15)
+                trigger_music_on_countdown(count, threshold=15)
                 countdown_state["timer_id"] = parent_window.after(1000, countdown, count - 1)
             else:
                 # Cleanup countdown

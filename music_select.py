@@ -8,16 +8,36 @@ from tkinter import Toplevel, Listbox, Button, Label, Frame, MULTIPLE, END, mess
 class MusicSelector:
     def __init__(self, music_folder="assets/music/"):
         """Initialize the music selector"""
-        pygame.mixer.init()
+        try:
+            pygame.mixer.init()
+            # only mark initialized if pygame reports it's actually initialized
+            if pygame.mixer.get_init():
+                self._mixer_initialized = True
+                try:
+                    pygame.mixer.music.set_endevent(pygame.USEREVENT + 1)
+                except Exception:
+                    pass
+            else:
+                self._mixer_initialized = False
+        except Exception as e:
+            print(f"Warning: pygame.mixer.init() failed: {e}")
+            self._mixer_initialized = False
         
         self.music_folder = music_folder
         self.all_tracks = self.load_tracks()
         self.selected_tracks = []
         self.current_track_index = 0
         self.is_playing = False
+
+        # NEW: ensure music starts once when countdown crosses threshold
+        self._started_on_countdown = False
         
-        # Set up event for when music ends
-        pygame.mixer.music.set_endevent(pygame.USEREVENT + 1)
+        # Set up event for when music ends (only if mixer initialized)
+        if self._mixer_initialized:
+            try:
+                pygame.mixer.music.set_endevent(pygame.USEREVENT + 1)
+            except Exception:
+                pass
         
     def load_tracks(self):
         """Load all music files from folder"""
@@ -174,12 +194,41 @@ class MusicSelector:
             width=12
         ).pack(side="left", padx=5)
     
+    def ensure_mixer_initialized(self):
+        """Try to initialize the pygame mixer on demand. Returns True if ready."""
+        if getattr(self, "_mixer_initialized", False) and pygame.mixer.get_init():
+            return True
+        try:
+            pygame.mixer.init()
+            if pygame.mixer.get_init():
+                try:
+                    pygame.mixer.music.set_endevent(pygame.USEREVENT + 1)
+                except Exception:
+                    pass
+                self._mixer_initialized = True
+                return True
+            else:
+                self._mixer_initialized = False
+                return False
+        except Exception as e:
+            print(f"Could not initialize mixer: {e}")
+            self._mixer_initialized = False
+            return False
+
     def play_random_track(self):
         """Play a random track from selected tracks"""
         if not self.selected_tracks:
             return
-        
+
+        # ensure mixer is ready, having mixer errors but they are handled 
+        if not self.ensure_mixer_initialized():
+            print("Mixer not initialized; cannot play music.")
+            return
+
         try:
+            # double-check mixer state before calling load/play
+            if not pygame.mixer.get_init():
+                raise RuntimeError("mixer not initialized")
             track = random.choice(self.selected_tracks)
             pygame.mixer.music.load(track["path"])
             pygame.mixer.music.play()
@@ -187,27 +236,65 @@ class MusicSelector:
             print(f"Now playing: {track['name']}")
         except Exception as e:
             print(f"Error playing music: {e}")
-    
+            self.is_playing = False
+            # if mixer was quit externally, mark for re-init on next attempt
+            if "mixer not initialized" in str(e).lower() or isinstance(e, RuntimeError):
+                self._mixer_initialized = False
+
+    def play_random_track_with_retry(self):
+        """Wrapper that plays music and retries after re-initializing mixer if needed"""
+        if not self.selected_tracks:
+            return
+
+        # First attempt
+        self.play_random_track()
+
+        # If failed due to mixer, retry once after re-init
+        if not self.is_playing:
+            print("First attempt failed; re-initializing mixer...")
+            self._mixer_initialized = False
+            if self.ensure_mixer_initialized():
+                print("Mixer re-initialized; retrying playback...")
+                self.play_random_track()
+
     def stop_music(self):
-        """Stop playing music"""
-        pygame.mixer.music.stop()
-        self.is_playing = False
+        """Stop playing music (safe if mixer not initialized)"""
+        try:
+            if pygame.mixer.get_init():
+                pygame.mixer.music.stop()
+        except Exception as e:
+            print(f"Warning stopping music: {e}")
+        finally:
+            # Always clear the playing flag so future start_music() calls work
+            self.is_playing = False
     
     def set_volume(self, volume):
         """Set music volume (0.0 to 1.0)"""
         pygame.mixer.music.set_volume(volume)
     
     def check_music_events(self, event):
-        """
-        Check pygame events for music end event.
-        Call this in your game loop if you want auto-play next track.
-        
-        Example:
-            for event in pygame.event.get():
-                music_selector.check_music_events(event)
-        """
         if event.type == pygame.USEREVENT + 1:
             self.play_random_track()
+
+    def trigger_on_countdown(self, remaining_seconds, threshold=15):
+        """
+        Start music once when remaining_seconds <= threshold.
+        This is so I can line up the game clock with the start music, off by like one second
+        """
+        try:
+            remaining = int(remaining_seconds)
+        except Exception:
+            return
+
+        if remaining <= threshold and not self._started_on_countdown:
+            if not self.selected_tracks:
+                self.selected_tracks = self.all_tracks
+            self.play_random_track_with_retry()
+            self._started_on_countdown = True
+
+    def reset_countdown_trigger(self):
+        """Reset the internal countdown-start flag for a new run."""
+        self._started_on_countdown = False
 
 
 # Global music selector instance
@@ -220,15 +307,33 @@ def show_music_selector(parent=None):
 
 
 def start_music():
-    """Start playing selected music"""
+    """Start playing selected music (do not restart if already playing)"""
+    # avoid restarting if already playing
+    if music_selector.is_playing:
+        return
+
+    # ensure mixer ready before attempting to start
+    if not music_selector.ensure_mixer_initialized():
+        print("Mixer not available; cannot start music.")
+        return
+
     if music_selector.selected_tracks:
-        music_selector.play_random_track()
+        music_selector.play_random_track_with_retry()
     else:
         # Default: select all tracks
         music_selector.selected_tracks = music_selector.all_tracks
-        music_selector.play_random_track()
+        music_selector.play_random_track_with_retry()
 
 
 def stop_music():
     """Stop playing music"""
     music_selector.stop_music()
+
+
+def trigger_music_on_countdown(remaining_seconds, threshold=15):
+    """Wrapper for use by external code (e.g. the Tk countdown)."""
+    music_selector.trigger_on_countdown(remaining_seconds, threshold)
+
+def reset_music_countdown_trigger():
+    """Wrapper to reset the countdown trigger between runs."""
+    music_selector.reset_countdown_trigger()
