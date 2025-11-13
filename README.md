@@ -4,34 +4,21 @@
 
 ---
 
-## Overview
-- Photon is a team based multiplayer lasertag game utilizing UDP networking and Python GUI interfacing. It comes with a complete soundtrack and gameplay audiofeedback. 
-### Core Gameplay:
-- Team Composition, Hit Detection, Base Capturing
-### Scoring:
-- Normal Hit: +10
-- Base Capture: +10
-- Friendly Fire: -10
-
-
----
-
 ## Requirements
 
 - **Python 3.7 or higher**
 - **PostgreSQL database**
-- **Debian/Ubuntu Linux** (designed for)
+- **Debian/Ubuntu Linux**
 
-### Dependencies
-- Tkinter: Python GUI framework
-- Pillow (PIL): Image processing
-- Psycopg2: PostgreSQL database adapter
+## Dependencies
+- *Tkinter*: Python GUI framework
+- *PyGame*: ... another Python GUI framework
+- *Pillow*: Image processing
+- *Psycopg2*: PostgreSQL database adapter
 
 ---
 
 ## Installation
-
-### Quick Setup
 
 1. **Navigate to the project directory:**
    ```bash
@@ -45,7 +32,7 @@
    
    Enter your sudo password when prompted.
 
-3. **Activate the virtual environment:**
+3. **Activate the generated virtual environment in the project folder:**
    ```bash
    cd ..
    source venv/bin/activate
@@ -76,9 +63,3 @@
    ```bash
    python3 main.py
    ```
-
-
-
-
-
-
