@@ -85,6 +85,7 @@ def create_team_display(parent, team_name, team_color, players):
 
         base_icon_label = Label(
             player_frame,
+            text="",
             bg="#1a1a1a",
             width=3,
             anchor="center"
