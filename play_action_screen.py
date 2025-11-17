@@ -85,9 +85,10 @@ def create_team_display(parent, team_name, team_color, players):
 
         base_icon_label = Label(
             player_frame,
-            text="   ",
+            text="",
             bg="#1a1a1a",
-            width=3,
+            width=2,
+            height=1,
             anchor="center"
         )
         base_icon_label.pack(side=LEFT)
@@ -223,7 +224,7 @@ def add_base_icon(equipment_code):
 
         if equipment_code in team_displays[team] and base_icon_photo:
             player_widgets = team_displays[team][equipment_code]
-            player_widgets["base_icon"].config(image=base_icon_photo, compound="left")
+            player_widgets["base_icon"].config(image=base_icon_photo)
 
 
 def get_player_name(equipment_code):
