@@ -19,7 +19,7 @@ WINDOW_HEIGHT = 550
 MAX_PLAYERS_PER_TEAM = 15
 START_ROW = 6
 PLAYER_START_ROW = START_ROW + 2
-COUNTDOWN_SECONDS = 30
+COUNTDOWN_SECONDS = 15
 
 # Global variables
 login_window = None
@@ -92,11 +92,14 @@ def save_all_players():
 
 def clear_all_players():
     """Clear all player entry fields"""
+    global player_equipment_map
+
     for team, entries in player_entries.items():
         for code_entry, name_entry in entries:
             code_entry.delete(0, END)
             name_entry.delete(0, END)
 
+    player_equipment_map.clear()
     initialize_rows()
 
 def initialize_rows():
@@ -229,9 +232,6 @@ def create_countdown_logic(parent_window, start_button):
                 countdown_state["timer_id"] = None
                 countdown_state["label"] = None
 
-                # Start music when game begins
-                start_music()
-
                 # Start game
                 red_players, green_players = get_all_players()
                 display_pa(
@@ -345,7 +345,7 @@ def show_login_screen():
     ).pack(side="left", padx=10, pady=5)
 
     # Create countdown and start button
-    start_button = Button(footer_frame, text="Begin Countdown to Play Action", fg="green")
+    start_button = Button(footer_frame, text="Start Play Action Countdown", fg="green")
     start_countdown, skip_to_play = create_countdown_logic(login_window, start_button)
 
     start_button.config(command=start_countdown)
@@ -353,7 +353,7 @@ def show_login_screen():
 
     Button(
         footer_frame,
-        text="Enter Play Action Immediately",
+        text="Force Enter Play Action",
         fg="blue",
         command=skip_to_play
     ).pack(side="right", padx=10, pady=5)
