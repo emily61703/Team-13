@@ -83,12 +83,11 @@ def create_team_display(parent, team_name, team_color, players):
         player_frame = Frame(frame, bg="#1a1a1a")
         player_frame.pack(fill=X, pady=4)
 
-        # Base icon (left side, initially hidden)
         base_icon_label = Label(
             player_frame,
             bg="#1a1a1a",
-            width=2,
-            anchor="w"
+            width=3,
+            anchor="center"
         )
         base_icon_label.pack(side=LEFT)
 
@@ -108,11 +107,11 @@ def create_team_display(parent, team_name, team_color, players):
             player_frame,
             text="0",
             font=("Helvetica", 12, "italic"),
-            fg="white",
+            fg="yellow",
             bg="#1a1a1a",
-            anchor="e"
+            anchor="w"
         )
-        score_label.pack(side=RIGHT, padx=(10, 0))
+        score_label.pack(side=LEFT, padx=(10, 0))
 
         # Store all labels for this player
         team_displays[team_color][code] = {
