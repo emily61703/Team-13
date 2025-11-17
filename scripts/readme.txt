@@ -1,16 +1,9 @@
-install.bat: Windows install script.
-install.sh: Linux install script.
+!! install.sh is not intended to be removed from the /scripts/ directory
 
-Do not move either out of /scripts/ directory!
-
----< For Linux, since that is what we care the most about... >---
-
-Follow the instructions exactly! To run this project on the Debain Virtual Machine, open the terminal and:
-    1. Navigate to /scripts/
-    2. Run the Linux script with: './install.sh' or 'bash install.sh'
-    3. Once completed, navigate to the main project directory.
-    4. Run the command: 'source venv/bin/activate && python3 main.py'
-
-To be 100% clear:
-  'source venv/bin/activate': Tells the computer to use the virtual environment with all the dependencies you just downloaded
-  'python3 main.py': Runs the program
+Quick start instructions:
+    1. run install.sh
+    2. enter VM password
+    3. wait until it completes
+    4. return to main project directory
+    5. set the virtual environment to the newly created venv/bin/activate directory
+    6. run our program at its entry point: main.py
