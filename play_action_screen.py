@@ -10,7 +10,7 @@ from sfx_system import soundsystem
 
 # Config
 WINDOW_WIDTH = 1000
-WINDOW_HEIGHT = 800
+WINDOW_HEIGHT = 700
 UDP_SEND_PORT = 7500
 GAME_DURATION = 360
 
