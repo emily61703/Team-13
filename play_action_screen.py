@@ -109,7 +109,7 @@ def create_team_display(parent, team_name, team_color, players):
             bg="#1a1a1a",
             anchor="w"
         )
-        score_label.place(x=150, y=0)
+        score_label.place(x=90, y=0)
 
         # Store all labels for this player
         team_displays[team_color][code] = {
