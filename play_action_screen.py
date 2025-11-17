@@ -85,7 +85,7 @@ def create_team_display(parent, team_name, team_color, players):
 
         base_icon_label = Label(
             player_frame,
-            text="",
+            text="   ",
             bg="#1a1a1a",
             width=3,
             anchor="center"
@@ -447,8 +447,8 @@ def display_pa(red_players, green_players, return_to_login_callback):
     # Sound toggle button
     sound_toggle_btn = Button(
         top_frame,
-        text="SFX ON",
-        bg="green",
+        text="SFX OFF",
+        bg="gray",
         fg="black",
         font=("Helvetica", 12, "bold")
     )
