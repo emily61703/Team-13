@@ -80,20 +80,17 @@ def create_team_display(parent, team_name, team_color, players):
     score_labels[team_color] = score_label
 
     for code, name in players:
-        player_frame = Frame(frame, bg="#1a1a1a")
+        player_frame = Frame(frame, bg="#1a1a1a", height=25)
         player_frame.pack(fill=X, pady=4)
+        player_frame.pack_propagate(False)
 
         base_icon_label = Label(
             player_frame,
-            text="",
-            bg="#1a1a1a",
-            width=2,
-            height=1,
-            anchor="center"
+            bg="#1a1a1a"
         )
-        base_icon_label.pack(side=LEFT)
+        base_icon_label.place(x=0, y=0)
 
-        # Player name (center)
+        # Player name
         player_label = Label(
             player_frame,
             text=name,
@@ -102,9 +99,8 @@ def create_team_display(parent, team_name, team_color, players):
             bg="#1a1a1a",
             anchor="w"
         )
-        player_label.pack(side=LEFT, padx=(5, 0))
+        player_label.place(x=30, y=0)
 
-        # Player score (right side)
         score_label = Label(
             player_frame,
             text="0",
@@ -113,7 +109,7 @@ def create_team_display(parent, team_name, team_color, players):
             bg="#1a1a1a",
             anchor="w"
         )
-        score_label.pack(side=LEFT, padx=(10, 0))
+        score_label.place(x=150, y=0)
 
         # Store all labels for this player
         team_displays[team_color][code] = {
