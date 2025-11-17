@@ -83,6 +83,16 @@ def create_team_display(parent, team_name, team_color, players):
         player_frame = Frame(frame, bg="#1a1a1a")
         player_frame.pack(fill=X, pady=4)
 
+        # Base icon (left side, initially hidden)
+        base_icon_label = Label(
+            player_frame,
+            bg="#1a1a1a",
+            width=2,
+            anchor="w"
+        )
+        base_icon_label.pack(side=LEFT)
+
+        # Player name (center)
         player_label = Label(
             player_frame,
             text=name,
@@ -91,10 +101,27 @@ def create_team_display(parent, team_name, team_color, players):
             bg="#1a1a1a",
             anchor="w"
         )
-        player_label.pack(side=LEFT)
+        player_label.pack(side=LEFT, padx=(5, 0))
 
-        team_displays[team_color][code] = player_label
+        # Player score (right side)
+        score_label = Label(
+            player_frame,
+            text="0",
+            font=("Helvetica", 12, "italic"),
+            fg="white",
+            bg="#1a1a1a",
+            anchor="e"
+        )
+        score_label.pack(side=RIGHT, padx=(10, 0))
+
+        # Store all labels for this player
+        team_displays[team_color][code] = {
+            "base_icon": base_icon_label,
+            "name": player_label,
+            "score": score_label
+        }
         game_state["player_map"][code] = (name, team_color)
+        game_state[f"{code}_score"] = 0  # Initialize individual score
 
     return frame
 
@@ -171,6 +198,23 @@ def update_score(team, points=10):
         score_labels[team].config(text=f"Score: {game_state[f'{team}_score']}")
 
 
+def update_player_score(equipment_code, points=10):
+    """Update individual player score"""
+    if equipment_code in game_state["player_map"]:
+        name, team = game_state["player_map"][equipment_code]
+
+        # Update individual score
+        score_key = f"{equipment_code}_score"
+        if score_key not in game_state:
+            game_state[score_key] = 0
+        game_state[score_key] += points
+
+        # Update display
+        if equipment_code in team_displays[team]:
+            player_widgets = team_displays[team][equipment_code]
+            player_widgets["score"].config(text=str(game_state[score_key]))
+
+
 def add_base_icon(equipment_code):
     """Add base icon to player"""
     if equipment_code in game_state["player_map"]:
@@ -178,8 +222,8 @@ def add_base_icon(equipment_code):
         game_state["players_with_base"].add(equipment_code)
 
         if equipment_code in team_displays[team] and base_icon_photo:
-            label = team_displays[team][equipment_code]
-            label.config(image=base_icon_photo, compound="right")
+            player_widgets = team_displays[team][equipment_code]
+            player_widgets["base_icon"].config(image=base_icon_photo, compound="left")
 
 
 def get_player_name(equipment_code):
@@ -289,6 +333,7 @@ def process_hit(attacker_code, target_code):
         add_base_icon(attacker_code)
         if attacker_team == "green":
             update_score("green", 100)
+            update_player_score(attacker_code, 100)
             soundsystem.play_helmet_sound('hit')
         return is_friendly_fire
 
@@ -297,23 +342,27 @@ def process_hit(attacker_code, target_code):
         add_base_icon(attacker_code)
         if attacker_team == "red":
             update_score("red", 100)
+            update_player_score(attacker_code, 100)
             soundsystem.play_helmet_sound('hit')
         return is_friendly_fire
 
     if attacker_team == target_team and attacker_team is not None:
         add_event_message(f"Friendly Fire: {attacker_name} hit teammate {target_name}!", "friendly_fire")
         update_score(attacker_team, -10)
+        update_player_score(attacker_code, -10)
         is_friendly_fire = True
-        
+
         soundsystem.play_helmet_sound('hitown')
-        
+
         return is_friendly_fire
 
     if attacker_team and target_team:
         add_event_message(f"{attacker_name} hit {target_name}", attacker_team)
         update_score(attacker_team, 10)
-        
+        update_player_score(attacker_code, 10)
+
         soundsystem.play_helmet_sound('hit')
+        soundsystem.play_helmet_sound('gethit')
 
     return is_friendly_fire
 
@@ -394,6 +443,26 @@ def display_pa(red_players, green_players, return_to_login_callback):
         fg="black",
         font=("Helvetica", 12, "bold")
     ).pack(side=LEFT, padx=10, pady=10)
+
+    # Sound toggle button
+    sound_toggle_btn = Button(
+        top_frame,
+        text="SFX ON",
+        bg="green",
+        fg="black",
+        font=("Helvetica", 12, "bold")
+    )
+
+    def toggle_sound():
+        if soundsystem.enable_audio:
+            soundsystem.enable_audio = False
+            sound_toggle_btn.config(text="SFX OFF", bg="gray")
+        else:
+            soundsystem.enable_audio = True
+            sound_toggle_btn.config(text="SFX ON", bg="green")
+
+    sound_toggle_btn.config(command=toggle_sound)
+    sound_toggle_btn.pack(side=LEFT, padx=10, pady=10)
 
     main_frame = Frame(play_window, bg="#1a1a1a")
     main_frame.pack(fill=BOTH, expand=True, padx=30, pady=30)
