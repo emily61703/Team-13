@@ -314,7 +314,6 @@ def process_hit(attacker_code, target_code):
         update_score(attacker_team, 10)
         
         soundsystem.play_helmet_sound('hit')
-        soundsystem.play_game_sound('gethit')
 
     return is_friendly_fire
 
@@ -373,7 +372,6 @@ def display_pa(red_players, green_players, return_to_login_callback):
 
     def on_closing():
         global event_display, timer_label
-        soundsystem.play_game_sound('exit')
         send_acknowledgment(("127.0.0.1", UDP_SEND_PORT), "221")
         udp_server.stop()
         stop_music()
@@ -412,9 +410,7 @@ def display_pa(red_players, green_players, return_to_login_callback):
 
     # Start UDP server with callback
     udp_server.start(handle_udp_message)
-    
-    # Play game start sound
-    soundsystem.play_game_sound('start')
+
 
     # Send game start signal
     add_event_message("UDP server listening on port 7501", "system")
