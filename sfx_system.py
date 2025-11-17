@@ -6,13 +6,9 @@ from typing import Optional
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class sfx_system:
+class SFXSystem:
     """Game Sound Effects System"""
-    GAME_SOUNDS = {'start': 'assets/sounds/game/Photon Start.wav',
-        'exit': 'assets/sounds/game/Photon Exit.wav',
-        'intruder': 'assets/sounds/game/Photon Intruder.wav',
-        'empty_bin': 'assets/sounds/game/Photon Empty Bin.wav',
-        'close_program': 'assets/sounds/game/Photon Close Program.wav'}
+    GAME_SOUNDS = {} # Removed since these are corrupted
     HELMET_SOUNDS = {        'hit': 'assets/sounds/helmet/hit.wav',
         'gethit': 'assets/sounds/helmet/gethit.wav',
         'hitown': 'assets/sounds/helmet/hitown.wav',
@@ -49,7 +45,7 @@ class sfx_system:
                 if os.path.exists(sound_path):
                     sound = pygame.mixer.Sound(sound_path)
                     self.loaded_sounds[sound_name] = sound
-                    logger.info(f"✓ Loaded sound: {sound_name}")
+                    logger.info(f"Loaded sound: {sound_name}")
                 else:
                     logger.warning(f"Sound file not found: {sound_path}")
             except Exception as e:
@@ -123,4 +119,4 @@ class sfx_system:
             logger.error(f"Error getting sound duration: {e}")
             return 0.0
         
-soundsystem = sfx_system(enable_audio=True)
+soundsystem = SFXSystem(enable_audio=True)
