@@ -119,4 +119,4 @@ class SFXSystem:
             logger.error(f"Error getting sound duration: {e}")
             return 0.0
         
-soundsystem = SFXSystem(enable_audio=True)
+soundsystem = SFXSystem(enable_audio=False)
